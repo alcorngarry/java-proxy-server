@@ -29,13 +29,13 @@ public class ProxyThread extends Thread {
 			String stringHeader = new String(inBytes);
 
 			int indexHost = stringHeader.indexOf("Host: ");
-			int index1 = stringHeader.indexOf("\n");
+			int indexBreak = stringHeader.indexOf("\n");
 
 
-			String str = stringHeader.substring(indexA);
-			str = str.substring(6, indexB - 14);
+			String str = stringHeader.substring(indexHost);
+			str = str.substring(6, indexBreak - 14);
 
-			System.out.println("website:" + str);
+			System.out.println(str);
 			//System.out.println(str2.length());
 
 			//Next you want to establish a connection to the site the client wants (send get request to the server)
@@ -60,17 +60,18 @@ public class ProxyThread extends Thread {
 
 			int indexLocation = data.indexOf("Location: ");
 			int indexDate = data.indexOf("Date: ");
+			//int indexTime = data.indexOf("GMT ");
 
 			String dateString = data.substring(indexDate);
 			String locationString = data.substring(indexLocation);
 
 			int indexLine = locationString.indexOf("\n");
 
-			locationString = locationString.substring(10, indexLine);
-			dateString = dateString.substring(5, indexLine);
+			locationString = locationString.substring(10, indexLine - 1);
+			dateString = dateString.substring(6, indexLine - 1);
 
-			BufferedWriter out = new BufferedWriter(new FileWriter("log.txt"));
-    		out.write(locationString + "," + dateString + "\n");
+			BufferedWriter out = new BufferedWriter(new FileWriter("log.txt", true));
+    		out.write(locationString + " , " + dateString + "\n");
     		out.close();
 
 			System.out.println(locationString); 
