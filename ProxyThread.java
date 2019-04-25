@@ -24,6 +24,8 @@ public class ProxyThread extends Thread {
 			//BufferedReader inBuffer = new BufferedReader( new InputStreamReader(in));
 			in.read(inBytes);
 
+			byte[] saveBytes = inBytes;
+
 			String stringHeader = new String(inBytes);
 
 			int indexA = stringHeader.indexOf("Host: ");
@@ -31,20 +33,28 @@ public class ProxyThread extends Thread {
 
 
 			String str = stringHeader.substring(indexA);
-			String str2 = str.substring(6, indexB - 14);
+			str = str.substring(6, indexB - 14);
 
-			System.out.println(str2);
-			System.out.println(str2.length());
-
-			//String requestLine = inBuffer.readLine();
-
-			//System.out.println(requestLine);
+			//System.out.println(str);
+			//System.out.println(str2.length());
 
 
 			//Next you want to establish a connection to the site the client wants (send get request to the server)
 
-			//Socket connectToSite = new Socket(   ,80);
+			str = str.trim();
+
+			Socket connectToSite = new Socket(str ,80);
 			
+			InputStream hostInStream = connectToSite.getInputStream();
+			OutputStream hostOutStream = connectToSite.getOutputStream();
+			hostOutStream.write(saveBytes);
+			
+			byte[] hostBytes = new byte[1024];
+			
+			hostInStream.read(hostBytes);
+
+			System.out.println(new String(hostBytes));
+
 
 
 
