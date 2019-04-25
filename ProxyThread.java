@@ -28,8 +28,8 @@ public class ProxyThread extends Thread {
 
 			String stringHeader = new String(inBytes);
 
-			int indexA = stringHeader.indexOf("Host: ");
-			int indexB = stringHeader.indexOf("\n");
+			int indexHost = stringHeader.indexOf("Host: ");
+			int index1 = stringHeader.indexOf("\n");
 
 
 			String str = stringHeader.substring(indexA);
@@ -37,7 +37,6 @@ public class ProxyThread extends Thread {
 
 			System.out.println("website:" + str);
 			//System.out.println(str2.length());
-
 
 			//Next you want to establish a connection to the site the client wants (send get request to the server)
 
@@ -55,20 +54,27 @@ public class ProxyThread extends Thread {
 
 			String data = new String(hostBytes);
 
-			System.out.println(data);
+			//System.out.println(data);
+
+			//Take the input sent from the server and then store it
 
 			int indexLocation = data.indexOf("Location: ");
+			int indexDate = data.indexOf("Date: ");
 
+			String dateString = data.substring(indexDate);
 			String locationString = data.substring(indexLocation);
 
 			int indexLine = locationString.indexOf("\n");
 
 			locationString = locationString.substring(10, indexLine);
+			dateString = dateString.substring(5, indexLine);
 
-			System.out.println("The Location:" + locationString); 
+			BufferedWriter out = new BufferedWriter(new FileWriter("log.txt"));
+    		out.write(locationString + "," + dateString + "\n");
+    		out.close();
 
-			//Take the input sent from the server and then store it
-
+			System.out.println(locationString); 
+			System.out.println(dateString);
 
 			//Send the data to client
 
