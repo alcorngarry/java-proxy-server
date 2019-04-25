@@ -12,23 +12,41 @@ public class ProxyThread extends Thread {
 
 
 	public void run() {
+		
+		//System.out.println("New thread started for connection " + client.toString());
+		
 		try {
-
-			System.out.println("New thread started for connection " + client.toString());
 
 			byte[] inBytes = new byte[1024];
 
-			//First want to read the request fromm the client
+			//First want to read the request from the client
 			InputStream in = client.getInputStream();
-			BufferedReader inBuffer = new BufferedReader( new InputStreamReader(in));
-			//in.read(inBytes);
-			//System.out.println(new String(inBytes));
+			//BufferedReader inBuffer = new BufferedReader( new InputStreamReader(in));
+			in.read(inBytes);
 
-			String requestLine = inBuffer.readLine();
-			System.out.println(requestLine);
+			String stringHeader = new String(inBytes);
+
+			int indexA = stringHeader.indexOf("Host: ");
+			int indexB = stringHeader.indexOf("\n");
+
+
+			String str = stringHeader.substring(indexA);
+			String str2 = str.substring(6, indexB - 14);
+
+			System.out.println(str2);
+			System.out.println(str2.length());
+
+			//String requestLine = inBuffer.readLine();
+
+			//System.out.println(requestLine);
 
 
 			//Next you want to establish a connection to the site the client wants (send get request to the server)
+
+			//Socket connectToSite = new Socket(   ,80);
+			
+
+
 
 
 			//Take the input sent from the server and then store it
@@ -37,17 +55,10 @@ public class ProxyThread extends Thread {
 			//Send the data to client
 
 			DataOutputStream out = new DataOutputStream(client.getOutputStream());
-
 		}
 		catch (Exception e) {
 
 		}
 
 	}
-
-
-	//public String getHostAddress(String getRequest) {
-
-
-	//}
 }
