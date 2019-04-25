@@ -35,7 +35,7 @@ public class ProxyThread extends Thread {
 			String str = stringHeader.substring(indexA);
 			str = str.substring(6, indexB - 14);
 
-			//System.out.println(str);
+			System.out.println("website:" + str);
 			//System.out.println(str2.length());
 
 
@@ -53,18 +53,28 @@ public class ProxyThread extends Thread {
 			
 			hostInStream.read(hostBytes);
 
-			System.out.println(new String(hostBytes));
+			String data = new String(hostBytes);
 
+			System.out.println(data);
 
+			int indexLocation = data.indexOf("Location: ");
 
+			String locationString = data.substring(indexLocation);
 
+			int indexLine = locationString.indexOf("\n");
+
+			locationString = locationString.substring(10, indexLine);
+
+			System.out.println("The Location:" + locationString); 
 
 			//Take the input sent from the server and then store it
 
 
 			//Send the data to client
 
-			DataOutputStream out = new DataOutputStream(client.getOutputStream());
+			////OutputStream clientOutput = client.getOutputStream();
+			////System.out.println(new String(hostBytes));
+			////clientOutput.write(hostBytes);
 		}
 		catch (Exception e) {
 
