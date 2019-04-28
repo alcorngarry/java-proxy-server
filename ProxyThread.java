@@ -4,6 +4,11 @@ import java.net.*;
 
 public class ProxyThread extends Thread {
 	private Socket client;
+	private BufferedReader inputClientBr;
+	private BufferedWriter outputClientBw;
+	private BufferedReader inputServerBr;
+	private BufferedWriter outputServerBw;
+
 
 	ProxyThread(Socket client) {
 		this.client = client;
@@ -13,78 +18,72 @@ public class ProxyThread extends Thread {
 
 	public void run() {
 		
-		//System.out.println("New thread started for connection " + client.toString());
+		System.out.println("New thread started for connection " + client.toString());
 		
 		try {
 
-			byte[] inBytes = new byte[1024];
+			inputClientBr = new BufferedReader(new InputStreamReader(client.getInputStream()));
+			outputClientBw = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
 
-			//First want to read the request from the client
-			InputStream in = client.getInputStream();
-			//BufferedReader inBuffer = new BufferedReader( new InputStreamReader(in));
-			in.read(inBytes);
+			String requestTotal = inputClientBr.readLine();
+			System.out.println(requestTotal);
 
-			byte[] saveBytes = inBytes;
+			String requestMethod = requestTotal.substring(0, requestTotal.indexOf(' '));
+			System.out.println(requestMethod);
 
-			String stringHeader = new String(inBytes);
+			String requestURL = requestTotal.substring(requestTotal.indexOf(' ') + 1);
+			requestURL = requestURL.substring(0, requestURL.indexOf(' '));
 
-			int indexHost = stringHeader.indexOf("Host: ");
-			int indexBreak = stringHeader.indexOf("\n");
+			System.out.println(requestURL);
 
 
-			String str = stringHeader.substring(indexHost);
-			str = str.substring(6, indexBreak - 14);
 
-			System.out.println(str);
-			//System.out.println(str2.length());
+			if (requestMethod.equals("CONNECT"))
+			{	
 
-			//Next you want to establish a connection to the site the client wants (send get request to the server)
 
-			str = str.trim();
+				String socketSplit[] = requestURL.split(":");
+				int port = Integer.valueOf(socketSplit[1]);
+				System.out.println(port);
+				System.out.println(socketSplit[0]);
 
-			Socket connectToSite = new Socket(str ,80);
-			
-			InputStream hostInStream = connectToSite.getInputStream();
-			OutputStream hostOutStream = connectToSite.getOutputStream();
-			hostOutStream.write(saveBytes);
-			
-			byte[] hostBytes = new byte[1024];
-			
-			hostInStream.read(hostBytes);
+				for(int i =0; i < 5; i++) {
+					inputClientBr.readLine();
+				}
 
-			String data = new String(hostBytes);
 
-			//System.out.println(data);
+				InetAddress address = InetAddress.getByName(socketSplit[0]);
+				Socket proxyToServer = new Socket(socketSplit[0], port);
 
-			//Take the input sent from the server and then store it
+				//String connected = "HTTP/1.0 200 Connection established\r\n" + "Proxy-Agent: ProxyServer/1.0\r\n" + "\r\n";
+				//outputClientBw.write(connected);
+				outputClientBw.flush();
 
-			int indexLocation = data.indexOf("Location: ");
-			int indexDate = data.indexOf("Date: ");
-			//int indexTime = data.indexOf("GMT ");
+				byte[] bytes = new byte[4096];
 
-			String dateString = data.substring(indexDate);
-			String locationString = data.substring(indexLocation);
+				client.getInputStream().read(bytes);
+				
+				proxyToServer.getOutputStream().write(bytes);
 
-			int indexLine = locationString.indexOf("\n");
+				byte[] bytes2 = new byte[4096];
 
-			locationString = locationString.substring(10, indexLine - 1);
-			dateString = dateString.substring(6, indexLine - 1);
+				proxyToServer.getInputStream().read(bytes2);
 
-			BufferedWriter out = new BufferedWriter(new FileWriter("log.txt", true));
-    		out.write(locationString + " , " + dateString + "\n");
-    		out.close();
+				client.getOutputStream().write(bytes2);
 
-			System.out.println(locationString); 
-			System.out.println(dateString);
+				//System.out.println(new String(bytes));
+				//inputClientBr.read(bytes);
 
-			//Send the data to client
+				
 
-			////OutputStream clientOutput = client.getOutputStream();
-			////System.out.println(new String(hostBytes));
-			////clientOutput.write(hostBytes);
+
+				
+			}
+
 		}
 		catch (Exception e) {
-
+			System.out.println("connection error");
+			e.printStackTrace();
 		}
 
 	}

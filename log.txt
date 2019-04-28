@@ -1,3 +1,42 @@
 http://www.truman.edu/ , Thu, 25 Apr 2019 23:10:34 G
 https://www.ebay.com/ , Thu, 25 Apr 2019 23:11:57 
 http://www.truman.edu/ , Thu, 25 Apr 2019 23:13:10 
+http://69.92.54.159/homepage.php , Fri, 26 Apr 2019 22:03:27 GMT
+Conte
+http://69.92.54.159/homepage.php , Fri, 26 Apr 2019 22:09:20 GMT
+Conte
+http://69.92.54.159/homepage.php , Fri, 26 Apr 2019 22:10:20 GMT
+Conte
+http://www.google.com/ , Fri, 26 Apr 2019 22:12:08 
+http://www.google.com/ , Fri, 26 Apr 2019 22:13:49 
+https://www.google.com/?gws_rd=ssl , Fri, 26 Apr 2019 22:30:15 GMT
+Server:
+https://www.google.com/?gws_rd=ssl , Fri, 26 Apr 2019 22:30:37 GMT
+Server:
+https://www.google.com/?gws_rd=ssl , Fri, 26 Apr 2019 22:31:22 GMT
+Server:
+https://www.twitch.tv/ , Fri, 26 Apr 2019 22:35:26 
+https://www.twitch.tvwww.twitch.tv:443 , Fri, 26 Apr 2019 22:35:26 GMT
+Via: 1.1 va
+http://www.google.com/ , Fri, 26 Apr 2019 22:39:23 
+http://69.92.54.159/homepage.php , Fri, 26 Apr 2019 22:40:27 GMT
+Conte
+https://www.thesprucepets.comwww.thesprucepets.com:443 , Fri, 26 Apr 2019 22:43:59 GMT
+Via: 1.1 varnish
+Connectio
+05 Method Not Allowed , Fri, 26 Apr 2019 23:08:25
+05 Method Not Allowed , Fri, 26 Apr 2019 23:08:25
+05 Method Not Allowed , Fri, 26 Apr 2019 23:08:25
+05 Method Not Allowed , Fri, 26 Apr 2019 23:08:25
+05 Method Not Allowed , Fri, 26 Apr 2019 23:08:25
+05 Method Not Allowed , Fri, 26 Apr 2019 23:08:26
+05 Method Not Allowed , Fri, 26 Apr 2019 23:08:26
+05 Method Not Allowed , Fri, 26 Apr 2019 23:08:26
+05 Method Not Allowed , Fri, 26 Apr 2019 23:08:31
+05 Method Not Allowed , Fri, 26 Apr 2019 23:08:31
+05 Method Not Allowed , Fri, 26 Apr 2019 23:08:31
+05 Method Not Allowed , Fri, 26 Apr 2019 23:08:31
+05 Method Not Allowed , Fri, 26 Apr 2019 23:08:31
+05 Method Not Allowed , Fri, 26 Apr 2019 23:08:31
+05 Method Not Allowed , Fri, 26 Apr 2019 23:08:31
+05 Method Not Allowed , Fri, 26 Apr 2019 23:08:31
