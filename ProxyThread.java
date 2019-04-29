@@ -73,7 +73,7 @@ public class ProxyThread extends Thread
 		}
 		catch (Exception e) 
 		{
-			System.out.println("connection error");
+			System.out.println("HTTP/1.0 400 Bad Request\r\n" + "Proxy-Agent: ProxyServer/1.0\r\n" + "\r\n");
 			e.printStackTrace();
 		}
 	}
