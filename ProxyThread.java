@@ -18,7 +18,7 @@ public class ProxyThread extends Thread {
 
 	public void run() {
 		
-		System.out.println("New thread started for connection " + client.toString());
+		//System.out.println("New thread started for connection " + client.toString());
 		
 		try {
 
@@ -68,17 +68,14 @@ public class ProxyThread extends Thread {
 
 				while ((bufferSize = client.getInputStream().read(bytes)) > 0 ) {
 
-					System.out.println(bufferSize);
+					System.out.println("Buffer Size: " + bufferSize);
 					//System.out.println(new String(bytes));
 					proxyToServer.getOutputStream().write( bytes, 0, bufferSize);
+					//System.out.println("I am here");
 				}
-
-				System.out.println("through the loop1");
-				
 				
 				proxyToServerClass psc = new proxyToServerClass(client.getInputStream(), client.getOutputStream());
 				psc.start();
-				System.out.println("through the loop2");
 			}
 
 		}
@@ -106,13 +103,11 @@ public class ProxyThread extends Thread {
 				byte[] bytes2 = new byte[4096];
 				
 				
-				int readTotalBytes = is.read(bytes2);
+				int readTotalBytes;
 
-
-				while (readTotalBytes > 0 ) {
-					os.write(bytes2);
-					readTotalBytes = is.read(bytes2);
-					System.out.println("in the While loop bitch");	
+				while((readTotalBytes = is.read(bytes2)) > 0 ) {
+					System.out.println("in the new thread loop");
+					os.write(bytes2, 0, readTotalBytes);
 				}
 			}
 			catch (Exception e )
