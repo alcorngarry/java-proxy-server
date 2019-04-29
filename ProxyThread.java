@@ -1,6 +1,9 @@
 import java.io.*;
 import java.net.*;
 
+//Thread created by driver class (ProxyServer)
+//Relays information from server to client
+//Manages caching
 
 public class ProxyThread extends Thread 
 {
@@ -8,11 +11,17 @@ public class ProxyThread extends Thread
 	private BufferedReader inputClientBr;
 	private BufferedWriter outputClientBw;
 
+//Constructor to create socket
+//Starts ProxyThread
+
 	ProxyThread(Socket client) 
 	{
 		this.client = client;
 		this.start();
 	}
+
+//Method that is executed when ProxyThread is started
+//Sever to Client implementation
 
 	public void run() 
 	{	
@@ -29,7 +38,7 @@ public class ProxyThread extends Thread
 			String requestURL = requestTotal.substring(requestTotal.indexOf(' ') + 1);
 			requestURL = requestURL.substring(0, requestURL.indexOf(' '));
 
-			if (requestMethod.equals("CONNECT"))
+			if (requestMethod.equals("CONNECT") || requestMethod.equals("GET") )
 			{	
 				String socketSplit[] = requestURL.split(":");
 				int port = Integer.valueOf(socketSplit[1]);
@@ -51,7 +60,7 @@ public class ProxyThread extends Thread
 				outputClientBw.write(connected);
 				outputClientBw.flush();
 
-				proxyToServerClass psc = new proxyToServerClass( client.getInputStream(), proxyToServer.getOutputStream());
+				clientToServerClass psc = new clientToServerClass( client.getInputStream(), proxyToServer.getOutputStream());
 				psc.start();
 
 				byte[] bytes = new byte[8192];
@@ -69,27 +78,39 @@ public class ProxyThread extends Thread
 				client.close();
 				proxyToServer.close();
 			}
+			else
+			{
+				//Send error message to client 
+				String message = "HTTP/1.0 501 Not Implemented\r\n" + "Proxy-Agent: ProxyServer/1.0\r\n" + "\r\n";
+				outputClientBw.write(message);
+				outputClientBw.flush();
+			}
 
 		}
 		catch (Exception e) 
 		{
+			//Print error message for client
 			System.out.println("HTTP/1.0 400 Bad Request\r\n" + "Proxy-Agent: ProxyServer/1.0\r\n" + "\r\n");
-			e.printStackTrace();
 		}
 	}
 
-	public class proxyToServerClass extends Thread 
+//Thread that relays information from client to server
+
+	public class clientToServerClass extends Thread 
 	{
 
 		private InputStream is;
 		private OutputStream os;
 
-		proxyToServerClass(InputStream is, OutputStream os) 
+		clientToServerClass(InputStream is, OutputStream os) 
 		{
 			this.is = is;
 			this.os = os;
 
 		}
+
+	//Method that is executed when ProxyThread is started
+	//Client to Server implementation
 
 		public void run() {
 			
@@ -113,6 +134,9 @@ public class ProxyThread extends Thread
 
 	}
 
+
+//Method to create cache files and folder to contain files 
+//Passes URL to create file name and byte content to populate cache files	
 	public void cacheFile(String urlString, byte[] content)
 	{
 		try
