@@ -6,8 +6,6 @@ public class ProxyThread extends Thread {
 	private Socket client;
 	private BufferedReader inputClientBr;
 	private BufferedWriter outputClientBw;
-	private BufferedReader inputServerBr;
-	private BufferedWriter outputServerBw;
 
 
 	ProxyThread(Socket client) {
@@ -51,20 +49,22 @@ public class ProxyThread extends Thread {
 				InetAddress address = InetAddress.getByName(socketSplit[0]);
 				Socket proxyToServer = new Socket(socketSplit[0], port);
 
-				String connected = "HTTP/1.0 200 Connection established\r\n" + "Proxy-Agent: ProxyServer/1.0\r\n" + "\r\n";
+				//Connection established
+
+				String connected = "HTTP/1.0 200 OK\r\n" + "Proxy-Agent: ProxyServer/1.0\r\n" + "\r\n";
 				outputClientBw.write(connected);
 				outputClientBw.flush();
 
 				proxyToServerClass psc = new proxyToServerClass( client.getInputStream(), proxyToServer.getOutputStream());
 				psc.start();
 
-				byte[] bytes = new byte[4096];
+				byte[] bytes = new byte[8192];
 
 				int bufferSize;
 
 				while ((bufferSize = proxyToServer.getInputStream().read(bytes)) > 0 ) {
 
-					System.out.println("Buffer Size: " + bufferSize);
+					//System.out.println("Buffer Size: " + bufferSize);
 
 					client.getOutputStream().write( bytes, 0, bufferSize);
 				}
@@ -81,6 +81,9 @@ public class ProxyThread extends Thread {
 	}
 
 
+
+
+
 	public class proxyToServerClass extends Thread {
 
 		private InputStream is;
@@ -95,14 +98,14 @@ public class ProxyThread extends Thread {
 		public void run() {
 			
 			try {
-				byte[] bytes2 = new byte[4096];
+				byte[] bytes2 = new byte[8192];
 				
 				
 				int readTotalBytes;
 
 				while((readTotalBytes = is.read(bytes2)) > 0 ) {
 					os.write(bytes2, 0, readTotalBytes);
-					System.out.println(new String(bytes2));
+					//System.out.println(new String(bytes2));
 				}
 			}
 			catch (Exception e )
