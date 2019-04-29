@@ -18,24 +18,18 @@ public class ProxyThread extends Thread {
 
 	public void run() {
 		
-		//System.out.println("New thread started for connection " + client.toString());
-		
 		try {
 
 			inputClientBr = new BufferedReader(new InputStreamReader(client.getInputStream()));
 			outputClientBw = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
 
 			String requestTotal = inputClientBr.readLine();
-			//System.out.println(requestTotal);
 
 			String requestMethod = requestTotal.substring(0, requestTotal.indexOf(' '));
 			System.out.println(requestMethod);
 
 			String requestURL = requestTotal.substring(requestTotal.indexOf(' ') + 1);
 			requestURL = requestURL.substring(0, requestURL.indexOf(' '));
-
-			//System.out.println(requestURL);
-
 
 
 			if (requestMethod.equals("CONNECT"))
@@ -61,21 +55,22 @@ public class ProxyThread extends Thread {
 				outputClientBw.write(connected);
 				outputClientBw.flush();
 
+				proxyToServerClass psc = new proxyToServerClass( client.getInputStream(), proxyToServer.getOutputStream());
+				psc.start();
+
 				byte[] bytes = new byte[4096];
-				System.out.println("through the loop0");
-				//int bufferSize = client.getInputStream().read(bytes);
+
 				int bufferSize;
 
-				while ((bufferSize = client.getInputStream().read(bytes)) > 0 ) {
+				while ((bufferSize = proxyToServer.getInputStream().read(bytes)) > 0 ) {
 
 					System.out.println("Buffer Size: " + bufferSize);
-					//System.out.println(new String(bytes));
-					proxyToServer.getOutputStream().write( bytes, 0, bufferSize);
-					//System.out.println("I am here");
+
+					client.getOutputStream().write( bytes, 0, bufferSize);
 				}
-				
-				proxyToServerClass psc = new proxyToServerClass(client.getInputStream(), client.getOutputStream());
-				psc.start();
+
+				client.close();
+				proxyToServer.close();
 			}
 
 		}
@@ -106,8 +101,8 @@ public class ProxyThread extends Thread {
 				int readTotalBytes;
 
 				while((readTotalBytes = is.read(bytes2)) > 0 ) {
-					System.out.println("in the new thread loop");
 					os.write(bytes2, 0, readTotalBytes);
+					System.out.println(new String(bytes2));
 				}
 			}
 			catch (Exception e )
