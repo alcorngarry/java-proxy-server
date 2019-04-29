@@ -26,7 +26,7 @@ public class ProxyThread extends Thread {
 			outputClientBw = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
 
 			String requestTotal = inputClientBr.readLine();
-			System.out.println(requestTotal);
+			//System.out.println(requestTotal);
 
 			String requestMethod = requestTotal.substring(0, requestTotal.indexOf(' '));
 			System.out.println(requestMethod);
@@ -34,7 +34,7 @@ public class ProxyThread extends Thread {
 			String requestURL = requestTotal.substring(requestTotal.indexOf(' ') + 1);
 			requestURL = requestURL.substring(0, requestURL.indexOf(' '));
 
-			System.out.println(requestURL);
+			//System.out.println(requestURL);
 
 
 
@@ -47,6 +47,8 @@ public class ProxyThread extends Thread {
 				System.out.println(port);
 				System.out.println(socketSplit[0]);
 
+
+				//get rid of the header
 				for(int i =0; i < 5; i++) {
 					inputClientBr.readLine();
 				}
@@ -55,35 +57,68 @@ public class ProxyThread extends Thread {
 				InetAddress address = InetAddress.getByName(socketSplit[0]);
 				Socket proxyToServer = new Socket(socketSplit[0], port);
 
-				//String connected = "HTTP/1.0 200 Connection established\r\n" + "Proxy-Agent: ProxyServer/1.0\r\n" + "\r\n";
-				//outputClientBw.write(connected);
+				String connected = "HTTP/1.0 200 Connection established\r\n" + "Proxy-Agent: ProxyServer/1.0\r\n" + "\r\n";
+				outputClientBw.write(connected);
 				outputClientBw.flush();
 
 				byte[] bytes = new byte[4096];
+				System.out.println("through the loop0");
+				//int bufferSize = client.getInputStream().read(bytes);
+				int bufferSize;
 
-				client.getInputStream().read(bytes);
+				while ((bufferSize = client.getInputStream().read(bytes)) > 0 ) {
+
+					System.out.println(bufferSize);
+					//System.out.println(new String(bytes));
+					proxyToServer.getOutputStream().write( bytes, 0, bufferSize);
+				}
+
+				System.out.println("through the loop1");
 				
-				proxyToServer.getOutputStream().write(bytes);
-
-				byte[] bytes2 = new byte[4096];
-
-				proxyToServer.getInputStream().read(bytes2);
-
-				client.getOutputStream().write(bytes2);
-
-				//System.out.println(new String(bytes));
-				//inputClientBr.read(bytes);
-
 				
-
-
-				
+				proxyToServerClass psc = new proxyToServerClass(client.getInputStream(), client.getOutputStream());
+				psc.start();
+				System.out.println("through the loop2");
 			}
 
 		}
 		catch (Exception e) {
 			System.out.println("connection error");
 			e.printStackTrace();
+		}
+	}
+
+
+	public class proxyToServerClass extends Thread {
+
+		private InputStream is;
+		private OutputStream os;
+
+		proxyToServerClass(InputStream is, OutputStream os) {
+			this.is = is;
+			this.os = os;
+
+		}
+
+		public void run() {
+			
+			try {
+				byte[] bytes2 = new byte[4096];
+				
+				
+				int readTotalBytes = is.read(bytes2);
+
+
+				while (readTotalBytes > 0 ) {
+					os.write(bytes2);
+					readTotalBytes = is.read(bytes2);
+					System.out.println("in the While loop bitch");	
+				}
+			}
+			catch (Exception e )
+			{
+				e.printStackTrace();
+			}
 		}
 
 	}
