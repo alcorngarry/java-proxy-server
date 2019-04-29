@@ -2,20 +2,20 @@ import java.io.*;
 import java.net.*;
 
 
-public class ProxyThread extends Thread {
+public class ProxyThread extends Thread 
+{
 	private Socket client;
 	private BufferedReader inputClientBr;
 	private BufferedWriter outputClientBw;
 
-
-	ProxyThread(Socket client) {
+	ProxyThread(Socket client) 
+	{
 		this.client = client;
 		this.start();
 	}
 
-
-	public void run() {
-		
+	public void run() 
+	{	
 		try {
 
 			inputClientBr = new BufferedReader(new InputStreamReader(client.getInputStream()));
@@ -29,27 +29,24 @@ public class ProxyThread extends Thread {
 			String requestURL = requestTotal.substring(requestTotal.indexOf(' ') + 1);
 			requestURL = requestURL.substring(0, requestURL.indexOf(' '));
 
-
 			if (requestMethod.equals("CONNECT"))
 			{	
-
 				String socketSplit[] = requestURL.split(":");
 				int port = Integer.valueOf(socketSplit[1]);
 				System.out.println(port);
 				System.out.println(socketSplit[0]);
-				cacheFile(socketSplit[0]);
+				
 
 				//get rid of the header
-				for(int i =0; i < 5; i++) {
+				for(int i =0; i < 5; i++) 
+				{
 					inputClientBr.readLine();
 				}
 
-
 				InetAddress address = InetAddress.getByName(socketSplit[0]);
-				Socket proxyToServer = new Socket(socketSplit[0], port);
+				Socket proxyToServer = new Socket(address, port);
 
 				//Connection established
-
 				String connected = "HTTP/1.0 200 OK\r\n" + "Proxy-Agent: ProxyServer/1.0\r\n" + "\r\n";
 				outputClientBw.write(connected);
 				outputClientBw.flush();
@@ -61,10 +58,11 @@ public class ProxyThread extends Thread {
 
 				int bufferSize;
 
-				while ((bufferSize = proxyToServer.getInputStream().read(bytes)) > 0 ) {
+				while ((bufferSize = proxyToServer.getInputStream().read(bytes)) > 0 ) 
+				{
 
 					//System.out.println("Buffer Size: " + bufferSize);
-
+					cacheFile(socketSplit[0], bytes);
 					client.getOutputStream().write( bytes, 0, bufferSize);
 				}
 
@@ -73,14 +71,49 @@ public class ProxyThread extends Thread {
 			}
 
 		}
-		catch (Exception e) {
+		catch (Exception e) 
+		{
 			System.out.println("connection error");
 			e.printStackTrace();
 		}
 	}
 
+	public class proxyToServerClass extends Thread 
+	{
 
-	public void cacheFile(String urlString)
+		private InputStream is;
+		private OutputStream os;
+
+		proxyToServerClass(InputStream is, OutputStream os) 
+		{
+			this.is = is;
+			this.os = os;
+
+		}
+
+		public void run() {
+			
+			try {
+				byte[] bytes2 = new byte[8192];
+				
+				
+				int readTotalBytes;
+
+				while((readTotalBytes = is.read(bytes2)) > 0 ) 
+				{
+					os.write(bytes2, 0, readTotalBytes);
+					//System.out.println(new String(bytes2));
+				}
+			}
+			catch (Exception e )
+			{
+				e.printStackTrace();
+			}
+		}
+
+	}
+
+	public void cacheFile(String urlString, byte[] content)
 	{
 		try
 		{
@@ -109,47 +142,18 @@ public class ProxyThread extends Thread {
 				
 				if(!fileToCache.exists())
 				{
+					System.out.println(fileName);
+					System.out.println(new String(content));
 					fileToCache.createNewFile();
+					FileOutputStream stream = new FileOutputStream(fileToCache);
+					stream.write(content);
+					stream.close();
 				}
-				BufferedWriter bw = new BufferedWriter(new FileWriter(fileToCache));
 
 		}
 		catch(Exception e)
 		{
 			System.out.println("Unable to Cache File");
 		}
-	}
-
-
-	public class proxyToServerClass extends Thread {
-
-		private InputStream is;
-		private OutputStream os;
-
-		proxyToServerClass(InputStream is, OutputStream os) {
-			this.is = is;
-			this.os = os;
-
-		}
-
-		public void run() {
-			
-			try {
-				byte[] bytes2 = new byte[8192];
-				
-				
-				int readTotalBytes;
-
-				while((readTotalBytes = is.read(bytes2)) > 0 ) {
-					os.write(bytes2, 0, readTotalBytes);
-					//System.out.println(new String(bytes2));
-				}
-			}
-			catch (Exception e )
-			{
-				e.printStackTrace();
-			}
-		}
-
 	}
 }
