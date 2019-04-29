@@ -33,12 +33,11 @@ public class ProxyThread extends Thread {
 			if (requestMethod.equals("CONNECT"))
 			{	
 
-
 				String socketSplit[] = requestURL.split(":");
 				int port = Integer.valueOf(socketSplit[1]);
 				System.out.println(port);
 				System.out.println(socketSplit[0]);
-
+				cacheFile(socketSplit[0]);
 
 				//get rid of the header
 				for(int i =0; i < 5; i++) {
@@ -81,7 +80,45 @@ public class ProxyThread extends Thread {
 	}
 
 
+	public void cacheFile(String urlString)
+	{
+		try
+		{
 
+			int indexOfFileExtention = urlString.lastIndexOf('.');
+
+			String fileExtention = urlString.substring(indexOfFileExtention, urlString.length());
+
+			String fileName = urlString.substring(0, indexOfFileExtention);
+
+			fileName = fileName.substring(fileName.indexOf('.') + 1);
+
+			fileName = fileName.replace("/", "__");
+			fileName = fileName.replace(".", "__");
+
+			if(fileExtention.contains("/"))
+			{
+				fileExtention = fileExtention.replace("/", "__");
+				fileExtention = fileExtention.replace(".", "__");
+				fileExtention += ".html";
+			}
+
+			fileName = fileName + fileExtention;
+				
+			File fileToCache = new File("cacheFileFolder/" + fileName);
+				
+				if(!fileToCache.exists())
+				{
+					fileToCache.createNewFile();
+				}
+				BufferedWriter bw = new BufferedWriter(new FileWriter(fileToCache));
+
+		}
+		catch(Exception e)
+		{
+			System.out.println("Unable to Cache File");
+		}
+	}
 
 
 	public class proxyToServerClass extends Thread {
